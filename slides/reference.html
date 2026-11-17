@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>引用定位｜Behind the Algorithm</title>
+  <link rel="stylesheet" href="slides.css">
+  <style>
+    #reference { display: grid; gap: .85rem; max-width: 48rem; }
+    #reference p { white-space: pre-line; overflow-wrap: anywhere; }
+    #deck a { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <header class="site-header">Behind the Algorithm</header>
+  <main id="deck" class="slide">
+    <p><a href="./">← 返回簡報</a></p>
+    <h1 id="document-title">引用定位</h1>
+    <article id="reference" aria-labelledby="document-title" aria-busy="true"></article>
+    <p><a id="original" hidden>查看原始 Markdown</a></p>
+    <noscript><p>請啟用 JavaScript 以讀取引用小節。</p></noscript>
+  </main>
+  <script>
+    const content = document.querySelector("#reference");
+    const original = document.querySelector("#original");
+    const doc = new URLSearchParams(location.search).get("doc") ?? "";
+    const project = new URL("../", location.href);
+    const isSupportedDocument = (path) => /^(?:wiki\/[a-z-]+|sources\/(?:index|S\d+))\.md$/.test(path);
+    const slug = (title) => title.toLowerCase().replace(/[^\p{L}\p{Nd}_ -]/gu, "").replaceAll(" ", "-");
+
+    function appendParagraph(text, markdownUrl) {
+      const paragraph = document.createElement("p");
+      let start = 0;
+      for (const match of text.matchAll(/\[([^\]]+)\]\(([^)]+)\)/g)) {
+        paragraph.append(text.slice(start, match.index));
+        const target = new URL(match[2], markdownUrl);
+        const relative = target.pathname.slice(project.pathname.length);
+        const link = document.createElement("a");
+        link.textContent = match[1];
+        if (target.origin === project.origin && target.pathname.startsWith(project.pathname) && isSupportedDocument(relative) && target.hash) {
+          const reference = new URL(location.pathname, location.href);
+          reference.searchParams.set("doc", relative);
+          reference.hash = target.hash;
+          link.href = reference;
+        } else if (target.protocol === "https:" || target.protocol === "http:") {
+          link.href = target;
+        }
+        paragraph.append(link);
+        start = match.index + match[0].length;
+      }
+      paragraph.append(text.slice(start));
+      content.append(paragraph);
+    }
+
+    async function showReference(signal) {
+      if (!isSupportedDocument(doc)) throw Error("無法辨識引用文件。");
+      const anchor = decodeURIComponent(location.hash.slice(1));
+      const markdownUrl = new URL(doc, project);
+      original.href = markdownUrl;
+      original.hidden = false;
+      const response = await fetch(markdownUrl, { signal });
+      if (!response.ok) throw Error("無法取得原始 Markdown。");
+      const markdown = await response.text();
+      signal.throwIfAborted();
+      const headings = [...markdown.matchAll(/^(#{1,6})[ \t]+([^\r\n]+)$/gm)];
+      const index = headings.findIndex((heading) => slug(heading[2]) === anchor);
+      if (index < 1) throw Error("找不到引用小節。");
+
+      document.querySelector("#document-title").textContent = headings[0][2];
+      const heading = headings[index];
+      const title = document.createElement("h2");
+      title.id = anchor;
+      title.textContent = heading[2];
+      content.append(title);
+      const section = markdown.slice(heading.index + heading[0].length, headings[index + 1]?.index).trim();
+      for (const paragraph of section.split(/\r?\n\s*\r?\n/)) appendParagraph(paragraph, markdownUrl);
+      title.scrollIntoView();
+    }
+
+    let currentRequest;
+    async function renderReference() {
+      currentRequest?.abort();
+      currentRequest = new AbortController();
+      const { signal } = currentRequest;
+      content.replaceChildren();
+      content.setAttribute("aria-busy", "true");
+      try {
+        await showReference(signal);
+      } catch (error) {
+        if (!signal.aborted) content.textContent = error.message;
+      } finally {
+        if (!signal.aborted) content.setAttribute("aria-busy", "false");
+      }
+    }
+    window.addEventListener("hashchange", renderReference);
+    renderReference();
+  </script>
+</body>
+</html>

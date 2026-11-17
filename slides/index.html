@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="wiki-sha256" content="151b6f01c19a4df05625883944e0196c93348401093e354223651977cd6dda3f">
+  <title>Behind the Algorithm｜Netflix 和 Spotify 怎麼知道你喜歡什麼？</title>
+  <link rel="stylesheet" href="slides.css">
+  <script src="slides.js" defer></script>
+</head>
+<body>
+  <header class="site-header"><span class="mark" aria-hidden="true">▶</span> Behind the Algorithm</header>
+  <main id="deck">
+    <section id="slide-1" class="slide cover" aria-labelledby="heading-1">
+      <h1 id="heading-1" tabindex="-1">Netflix 和 Spotify<br><span>怎麼知道</span><wbr><span>你喜歡什麼？</span></h1>
+      <div class="cover-copy"><h2>學習目標</h2><ul><li>辨認推薦會用到的訊號</li><li>區分依內容過濾、協同過濾與排序</li><li>讀懂兩個平台的公開案例與限制</li></ul></div>
+      <div class="cover-art" aria-hidden="true"><div class="film">▶</div><div class="record"></div></div>
+      
+    </section>
+    <section id="slide-2" class="slide " aria-labelledby="heading-2" hidden>
+      <h2 id="heading-2" tabindex="-1">推薦系統是什麼？</h2>
+      <p class="lead">想像你打開片庫。系統先挑出一些你可能感興趣的作品，再決定怎麼呈現。</p>
+      <ol class="stages"><li><strong>候選生成</strong><span>先挑出值得看的選項</span></li><li><strong>評分與排序</strong><span>決定哪些候選排在前面</span></li><li><strong>重排序</strong><span>再調整呈現順序</span></li></ol>
+      <p class="note">這是 Google 課程提供的入門框架。</p>
+      <aside class="sources" aria-label="Wiki 來源"><span>Wiki</span><a href="../wiki/intro.md#一般技術原理" data-sources="S01-1">入門 · S01-1</a><a href="../wiki/candidate-ranking.md#一般技術原理" data-sources="S01-1、S05-1">候選與排序 · S01-1、S05-1</a></aside>
+    </section>
+    <section id="slide-3" class="slide " aria-labelledby="heading-3" hidden>
+      <h2 id="heading-3" tabindex="-1">推薦訊號</h2>
+      <p class="lead">你說出的喜好，以及你留下的行為，都能提供線索。</p>
+      <div class="spread"><div><h3>明示回饋</h3><p>你直接為電影評分，讓系統知道你給了幾分。</p></div><div><h3>隱含回饋</h3><p>觀看紀錄可用來推斷興趣。</p></div></div>
+      <p class="note">Spotify 官方案例：搜尋、聆聽、跳過與儲存都會影響口味檔案。</p>
+      <aside class="sources" aria-label="Wiki 來源"><span>Wiki</span><a href="../wiki/intro.md#一般技術原理" data-sources="S02-2">入門 · S02-2</a><a href="../wiki/spotify.md#官方公開資訊英國版2026-年-10-月" data-sources="S04-2">Spotify · S04-2</a></aside>
+    </section>
+    <section id="slide-4" class="slide " aria-labelledby="heading-4" hidden>
+      <h2 id="heading-4" tabindex="-1">Content-Based Filtering</h2>
+      <p class="lead"><strong>依內容過濾</strong>看物品有什麼共同特徵。你收藏《窗邊》，本例會找與它有共同標籤的歌。</p>
+      <div class="demo"><h3>試試看：收藏《窗邊》</h3><p class="note">自製教學示範。歌曲、標籤與規則均為虛構，僅用於說明共同標籤的概念，與 Netflix 或 Spotify 的內部演算法無關。</p>
+      <p>候選歌曲《屋簷》的標籤為「雨聲」。為這次模擬選擇《窗邊》的標籤。</p>
+      <div class="choices" role="group" aria-label="選擇窗邊的標籤"><button type="button" data-tag="雨聲" aria-pressed="false">雨聲</button><button type="button" data-tag="鋼琴" aria-pressed="false">鋼琴</button></div>
+      <p id="demo-result" class="feedback" role="status">選一個標籤，看看《屋簷》會不會被推薦。</p></div>
+      <aside class="sources" aria-label="Wiki 來源"><span>Wiki</span><a href="../wiki/content-based.md#一般技術原理" data-sources="S02-4">依內容過濾 · S02-4</a><a href="../wiki/content-based.md#自製教學示範">依內容過濾 · 自製示範</a></aside>
+    </section>
+    <section id="slide-5" class="slide " aria-labelledby="heading-5" hidden>
+      <h2 id="heading-5" tabindex="-1">Collaborative Filtering</h2>
+      <p class="lead"><strong>協同過濾</strong>可以從相似使用者的互動找線索，發現自己還沒接觸過的內容。</p>
+      <div class="spread"><div><h3>甲的收藏</h3><p>《風鈴》、《窗邊》</p></div><div><h3>乙的收藏</h3><p>《風鈴》、《窗邊》、<strong>《屋簷》</strong></p></div></div>
+      <p class="note">自製示範。假設共同收藏代表口味相近，《屋簷》就可成為甲的候選。</p>
+      <aside class="sources" aria-label="Wiki 來源"><span>Wiki</span><a href="../wiki/collaborative.md#一般技術原理" data-sources="S02-1">協同過濾 · S02-1</a><a href="../wiki/collaborative.md#自製教學示範">協同過濾 · 自製示範</a></aside>
+    </section>
+    <section id="slide-6" class="slide " aria-labelledby="heading-6" hidden>
+      <h2 id="heading-6" tabindex="-1">Candidate Generation 與 Ranking</h2>
+      <p class="lead">候選生成決定「先考慮誰」，排序決定「誰排前面」。</p>
+      <ol class="stages"><li><strong>100 首</strong><span>虛構曲庫</span></li><li><strong>10 首</strong><span>候選生成後留下</span></li><li><strong>前 3 首</strong><span>依示範的興趣分數取出</span></li></ol>
+      <p class="note">數字為自製示範。Spotify 的 2021 年工程文章記錄了當時首頁先選候選，再依聽眾排序。</p>
+      <aside class="sources" aria-label="Wiki 來源"><span>Wiki</span><a href="../wiki/candidate-ranking.md#一般技術原理" data-sources="S05-1">候選與排序 · S05-1</a><a href="../wiki/candidate-ranking.md#自製教學示範">候選與排序 · 自製示範</a></aside>
+    </section>
+    <section id="slide-7" class="slide " aria-labelledby="heading-7" hidden>
+      <h2 id="heading-7" tabindex="-1">Netflix vs Spotify</h2>
+      <div class="spread compare"><article><h3>Netflix</h3><p class="scope">Help Center 官方公開資訊</p><p>觀看與評分、相近口味的會員和作品資訊都可成為訊號。</p><p>首頁可個人化選擇列、列內作品與列內順序。</p></article>
+      <article><h3>Spotify</h3><p class="scope">官方英國版說明 · 2026 年 10 月</p><p>搜尋、聆聽、跳過與儲存會影響口味檔案。</p><p>部分推薦來自編輯；首頁、搜尋及個人化歌單也可用演算法選擇和排序。</p></article></div>
+      <aside class="sources" aria-label="Wiki 來源"><span>Wiki</span><a href="../wiki/netflix.md#官方公開資訊" data-sources="S03-1、S03-3">Netflix · S03-1、S03-3</a><a href="../wiki/spotify.md#官方公開資訊英國版2026-年-10-月" data-sources="S04-1、S04-2">Spotify · S04-1、S04-2</a></aside>
+    </section>
+    <section id="slide-8" class="slide " aria-labelledby="heading-8" hidden>
+      <h2 id="heading-8" tabindex="-1">推薦系統的限制</h2>
+      <div class="spread"><div><h3>推斷會誤判</h3><p>假設你替朋友播放一首舞曲。只看播放紀錄，可能會把朋友的口味算到你身上。</p><p class="scope">自製教學示範</p></div><div><h3>資料處理也會影響結果</h3><p>Spotify 2021 年的工程案例中，首頁 Podcast Model 的訓練和線上運作曾使用略不同的特徵轉換，可能使推薦品質下降。</p></div></div>
+      <aside class="sources" aria-label="Wiki 來源"><span>Wiki</span><a href="../wiki/limitations.md#一般技術原理" data-sources="S02-2">限制 · S02-2</a><a href="../wiki/limitations.md#平台官方工程案例" data-sources="S05-3">限制 · S05-3</a><a href="../wiki/limitations.md#自製教學示範">限制 · 自製示範</a></aside>
+    </section>
+    <section id="slide-9" class="slide " aria-labelledby="heading-9" hidden>
+      <h2 id="heading-9" tabindex="-1">重點整理與小測驗</h2>
+      <p class="lead">內容特徵、相似使用者的互動，以及候選的排序，分別回答不同的問題。</p>
+      <div class="demo"><h3>系統先找出 10 首候選，再把它們排好。第二步是什麼？</h3>
+      <div class="choices" role="group" aria-label="小測驗選項"><button type="button" data-answer="candidate" aria-pressed="false">候選生成</button><button type="button" data-answer="ranking" aria-pressed="false">排序</button></div>
+      <p id="quiz-result" class="feedback" role="status">請選一個答案。</p></div>
+      <aside class="sources" aria-label="Wiki 來源"><span>Wiki</span><a href="../wiki/content-based.md#一般技術原理" data-sources="S02-4">依內容過濾 · S02-4</a><a href="../wiki/collaborative.md#一般技術原理" data-sources="S02-1">協同過濾 · S02-1</a><a href="../wiki/candidate-ranking.md#一般技術原理" data-sources="S05-1">候選與排序 · S05-1</a></aside>
+    </section>
+  </main>
+  <nav class="controls" aria-label="投影片導覽">
+    <button id="previous" type="button" disabled>← 上一頁</button>
+    <output id="page-number" aria-label="投影片頁碼">1 / 9</output>
+    <button id="next" type="button">下一頁 →</button>
+  </nav>
+</body>
+</html>
